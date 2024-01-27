@@ -17,13 +17,19 @@ const userSchema = new mongoose.Schema({
     },
     dob: {
         type: String,
+    
     },
     uid: {
         type: String,
-        required: true
+    
     },
     mobile : { 
-        type : Number
+        type : Number,
+        
+    },
+    userId : {
+        type: String,
+        required: true
     },
     bookings: [{
         type: mongoose.Schema.Types.ObjectId,

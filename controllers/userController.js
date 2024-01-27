@@ -3,10 +3,51 @@ const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 const User = require('../models/User');
 const ErrorHandler = require('../utils/errorHandler');
 const Order = require("../models/order");
+const admin = require("../config/firebase.config");
+
+
+exports.googleLogin = catchAsyncErrors(async (req, res, next) => {
+    if (!req.headers.authorization) {
+        return res.status(500).send({ message: "Invalid Token" });
+    }
+
+    const token = req.headers.authorization.split(" ")[1];
+
+    try {
+        const decodedValue = await admin.auth().verifyIdToken(token);
+
+        if (!decodedValue) {
+            return res.status(500).json({ success: false, message: "Unauthorized user" });
+        }
+
+        const userExists = await User.findOne({ userId: decodedValue.user_id });
+
+        if (!userExists) {
+            // User does not exist, create a new user
+            const newUser = new User({
+                name: decodedValue.name,
+                email: decodedValue.email,
+                userId: decodedValue.user_id,
+                mobile: decodedValue.phoneNumber,
+                role: "user",
+            });
+
+            const savedUser = await newUser.save();
+            return res.status(200).send({ user: savedUser });
+        } else {
+            // User already exists, handle accordingly
+            // ...
+            return res.status(200).send({ user: userExists });
+        }
+    } catch (error) {
+        return res.status(500).send({ success: false, message: error });
+    }
+});
+
 
 // sign up
 exports.createUser = catchAsyncErrors(async (req, res, next) => {
-    const { name, email, dob, uid, mobile, role } = req.body;
+    const { name, email, uid, mobile, role } = req.body;
 
     const userFound = await User.findOne({ uid });
     if(userFound){
@@ -16,12 +57,11 @@ exports.createUser = catchAsyncErrors(async (req, res, next) => {
     const user = await User.create({
         name,
         email,
-        dob,
         uid,
         mobile,
         role
     });
-
+    sendToken(user, 201, res);
 }
 })
 

@@ -3,34 +3,23 @@ const catchAsyncErrors = require("./catchAsyncErrors");
 const jwt = require('jsonwebtoken');
 const User = require("../models/User");
 
-const admin = require('firebase-admin');
-
 exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
-    const { authorization } = req.headers;
+    const { token } = req.cookies;
 
-    if (!authorization || !authorization.startsWith('Bearer ')) {
-        return next(new ErrorHandler('Please login to access this resource.', 401));
+    if (!token) {
+        return next(new ErrorHandler("Please Login to access this resource.", 401));
     }
 
-    const token = authorization.split(' ')[1];
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decodedData.id)
 
-    try {
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        const uid = decodedToken.uid;
-
-        const user = await User.findOne({ uid });
-
-        if (!user) {
-            return next(new ErrorHandler('User not found.', 401));
-        }
-
-        req.user = user;
-        next();
-    } catch (error) {
-        return next(new ErrorHandler('Invalid token. Please login again.', 401));
+    if (!user) {
+        return next(new ErrorHandler("Please Login to access this resource.", 401))
     }
-});
 
+    req.user = user;
+    next();
+})
 
 exports.authorizedRole = (...roles) => {
     return (req, res, next) => {
