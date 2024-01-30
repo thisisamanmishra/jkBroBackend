@@ -2,19 +2,29 @@ const Order = require('../models/order');
 
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 const ErrorHandler = require('../utils/errorHandler');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Razorpay = require('razorpay');
+
+// Create a new instance of Razorpay with your Razorpay key credentials
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  });
 
 // new booking
 
 exports.createOrder = catchAsyncErrors(async (req, res, next) => {
   const { orderDate, orderTime, address, distance, amount, user, payment, orderCompletion, tracking, furniture, appliances, cartoons, tvMounting, acInstallation, acUninstallation, carpenterCharges, singleLayerPacking, multiLayerPacking } = req.body;
 
-  // Validation of payment info
-  const intent = await stripe.paymentIntents.retrieve(paymentInfo.id);
+  
 
-  if (intent.status !== 'succeeded' || intent.amount !== totalPrice * 100) {
-    return next(new ErrorHandler('Invalid Payment Info', 400));
-  }
+   // Assuming totalPrice is calculated based on your logic
+   const totalPrice = req.body.amount; // Change this line based on your logic
+
+   // Create a new Razorpay order
+   const razorpayOrder = await razorpay.orders.create({
+     amount: totalPrice * 100, // Razorpay expects the amount in paise
+     currency: 'INR', // Change the currency code as needed
+   });
 
   if (dates.length < 1) {
     return next(new ErrorHandler('Please insert booking dates', 400));
@@ -41,7 +51,8 @@ exports.createOrder = catchAsyncErrors(async (req, res, next) => {
     carpenterCharges,
     tvMounting,
     acInstallation,
-    acUninstallation
+    acUninstallation,
+    razorpayOrderId: razorpayOrder.id,
   })
 
   res.status(201).json({
@@ -257,31 +268,6 @@ exports.getOrdersAcceptedByPacker = catchAsyncErrors(async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-});
-
-
-// send stripe api key to client
-exports.sendStripeApiKey = catchAsyncErrors((req, res, next) => {
-    res.status(200).json({
-        message: "success",
-        stripeApiKey: process.env.STRIPE_API_KEY
-    })
-})
-
-// send stripe secret key
-exports.sendStripeSecretKey = catchAsyncErrors(async (req, res, next) => {
-    const myPayment = await stripe.paymentIntents.create({
-        amount: (req.body.amount * 100),
-        currency: 'inr',
-        metadata: {
-            company: 'JK_Bros'
-        }
-    });
-
-    res.status(200).json({
-        success: true,
-        client_secret: myPayment.client_secret
-    });
 });
 
 

@@ -13,7 +13,5 @@ router.route('/orders/not-accepted').get(isAuthenticatedUser, getNotAcceptedOrde
 router.route('/orders/all').get(isAuthenticatedUser, authorizedRole("admin"), getAllOrders);
 router.route('/orders/accepted/:uid').get(isAuthenticatedUser, getOrdersAcceptedByPacker);
 
-// router.route('/stripeapikey').get(isAuthenticatedUser, sendStripeApiKey);
-// router.route('/stripeclientkey').post(isAuthenticatedUser, sendStripeSecretKey);;
 
 module.exports = router;

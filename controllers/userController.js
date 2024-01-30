@@ -20,24 +20,26 @@ exports.googleLogin = catchAsyncErrors(async (req, res, next) => {
             return res.status(500).json({ success: false, message: "Unauthorized user" });
         }
 
-        const userExists = await User.findOne({ userId: decodedValue.user_id });
+        const user = await User.findOne({ userId: decodedValue.user_id });
 
-        if (!userExists) {
+        if (!user) {
             // User does not exist, create a new user
             const newUser = new User({
                 name: decodedValue.name,
                 email: decodedValue.email,
                 userId: decodedValue.user_id,
-                mobile: decodedValue.phoneNumber,
+                uid: decodedValue.uid,
                 role: "user",
             });
 
-            const savedUser = await newUser.save();
-            return res.status(200).send({ user: savedUser });
+            const user = await newUser.save();
+            sendToken(user, 201, res);
+            return res.status(200).send({ user: user });
+            
         } else {
             // User already exists, handle accordingly
-            // ...
-            return res.status(200).send({ user: userExists });
+            sendToken(user, 200, res);
+            return res.status(200).send({ user: user });
         }
     } catch (error) {
         return res.status(500).send({ success: false, message: error });
@@ -49,8 +51,8 @@ exports.googleLogin = catchAsyncErrors(async (req, res, next) => {
 exports.createUser = catchAsyncErrors(async (req, res, next) => {
     const { name, email, uid, mobile, role } = req.body;
 
-    const userFound = await User.findOne({ uid });
-    if(userFound){
+    const user = await User.findOne({ uid });
+    if(user){
         return res.status(422).json({ error: "User Already Exist "});
     }
     else{
@@ -66,27 +68,27 @@ exports.createUser = catchAsyncErrors(async (req, res, next) => {
 })
 
 
-// login user
-exports.loginUser = catchAsyncErrors(async (req, res, next) => {
-    const { email, password } = req.body;
+// // login user
+// exports.loginUser = catchAsyncErrors(async (req, res, next) => {
+//     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select("+password");
-    if (!user) {
-        return next(new ErrorHandler("User not found", 404));
-    }
+//     const user = await User.findOne({ email }).select("+password");
+//     if (!user) {
+//         return next(new ErrorHandler("User not found", 404));
+//     }
 
-    if (!password) {
-        return next(new ErrorHandler("Please enter password", 400));
-    }
+//     if (!password) {
+//         return next(new ErrorHandler("Please enter password", 400));
+//     }
 
-    const isMatch = await user.comparePassword(password);
+//     const isMatch = await user.comparePassword(password);
 
-    if (!isMatch) {
-        return next(new ErrorHandler("Password incorrect"));
-    }
+//     if (!isMatch) {
+//         return next(new ErrorHandler("Password incorrect"));
+//     }
 
-    sendToken(user, 200, res);
-})
+//     sendToken(user, 200, res);
+// })
 
 // logout user
 exports.logoutUser = catchAsyncErrors(async (req, res, next) => {
@@ -111,12 +113,14 @@ exports.getUser = catchAsyncErrors(async (req, res, next) => {
 
 // update user 
 exports.updateUser = catchAsyncErrors(async (req, res, next) => {
-    const { name, email } = req.body;
+    const { name, email, dob, mobile } = req.body;
 
     const user = await User.findByIdAndUpdate(req.user.id, {
         $set: {
             name,
-            email
+            email,
+            dob,
+            mobile
         }
     }, { new: true , runValidators: true})
 
@@ -148,9 +152,9 @@ exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
 
 // get user details -- admin
 exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
-    const id = req.params.id;
+    const uid = req.params.uid;
 
-    const user = await User.findById(id);
+    const user = await User.findById(uid);
 
     if (!user) {
         return next(new ErrorHandler("User not found", 404));
@@ -174,14 +178,14 @@ exports.getAllUsers = catchAsyncErrors(async (req, res, next) => {
 
 // change user role -- admin
 exports.chageUserRole = catchAsyncErrors(async (req, res, next) => {
-    const id = req.params.id;
+    const uid = req.params.uid;
     const role = req.body.role;
 
-    if (id === req.user.id) {
+    if (id === req.user.uid) {
         return next(new ErrorHandler("You can't change change your own role", 400));
     }
 
-    const user = await User.findById(id);
+    const user = await User.findById(uid);
     if (!user) {
         return next(new ErrorHandler("User not found", 404));
     }

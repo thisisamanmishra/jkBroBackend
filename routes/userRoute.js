@@ -5,8 +5,8 @@ const { isAuthenticatedUser, authorizedRole } = require('../middlewares/auth');
 const router = express.Router();
 
 router.route("/users/login").post(googleLogin);
-// router.route("/user/new").post(createUser);
-router.route("/login").post(loginUser);
+router.route("/user/new").post(createUser);
+// router.route("/login").post(loginUser);
 router.route("/logout").get(logoutUser);
 router.route("/me").get(isAuthenticatedUser, getUser).put(isAuthenticatedUser, updateUser).delete(isAuthenticatedUser, deleteUser);
 

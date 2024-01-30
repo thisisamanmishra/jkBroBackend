@@ -95,6 +95,10 @@ const orderSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  razorpayOrderId: {
+    type: String,
+    required: true,
+  },
 });
 
 const Order = mongoose.model('Order', orderSchema);
