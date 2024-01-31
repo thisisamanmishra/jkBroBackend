@@ -5,10 +5,10 @@ const ErrorHandler = require('../utils/errorHandler');
 const Razorpay = require('razorpay');
 
 // Create a new instance of Razorpay with your Razorpay key credentials
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-  });
+// const razorpay = new Razorpay({
+//     key_id: process.env.RAZORPAY_KEY_ID,
+//     key_secret: process.env.RAZORPAY_KEY_SECRET,
+//   });
 
 // new booking
 
@@ -20,11 +20,11 @@ exports.createOrder = catchAsyncErrors(async (req, res, next) => {
    // Assuming totalPrice is calculated based on your logic
    const totalPrice = req.body.amount; // Change this line based on your logic
 
-   // Create a new Razorpay order
-   const razorpayOrder = await razorpay.orders.create({
-     amount: totalPrice * 100, // Razorpay expects the amount in paise
-     currency: 'INR', // Change the currency code as needed
-   });
+//    // Create a new Razorpay order
+//    const razorpayOrder = await razorpay.orders.create({
+//      amount: totalPrice * 100, // Razorpay expects the amount in paise
+//      currency: 'INR', // Change the currency code as needed
+//    });
 
   if (dates.length < 1) {
     return next(new ErrorHandler('Please insert booking dates', 400));
@@ -52,7 +52,7 @@ exports.createOrder = catchAsyncErrors(async (req, res, next) => {
     tvMounting,
     acInstallation,
     acUninstallation,
-    razorpayOrderId: razorpayOrder.id,
+    // razorpayOrderId: razorpayOrder.id,
   })
 
   res.status(201).json({
