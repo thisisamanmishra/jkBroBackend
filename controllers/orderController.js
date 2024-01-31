@@ -2,7 +2,7 @@ const Order = require('../models/order');
 
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 const ErrorHandler = require('../utils/errorHandler');
-const Razorpay = require('razorpay');
+// const Razorpay = require('razorpay');
 
 // Create a new instance of Razorpay with your Razorpay key credentials
 // const razorpay = new Razorpay({
