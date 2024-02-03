@@ -11,62 +11,72 @@ const ErrorHandler = require('../utils/errorHandler');
 //   });
 
 // new booking
-
+// new booking
 exports.createOrder = catchAsyncErrors(async (req, res, next) => {
-  const { dates, amount, orderTime, movingFrom, movingTo, distance, payment, orderCompletion, tracking, furniture, appliances, cartoons,singleLayerPacking,multiLayerPacking,  carpenterCharges,
-    tvMounting,
-    acInstallation,
-    acUninstallation,  } = req.body;
-
+    const {
+      form,
+      selectedItems,
+      truckDetails,
+      pricingModal,
+      bookingDetails,
+      totalAmount,
+      user,
+      acceptedBy,
+      payment,
+      orderCompletion,
+      tracking,
+      razorpayOrderId,
+    } = req.body;
+  
+    // Assuming totalPrice is calculated based on your logic
+    const totalPrice = totalAmount; // Change this line based on your logic
+  
+    // Create a new Razorpay order
+    // const razorpayOrder = await razorpay.orders.create({
+    //   amount: totalPrice * 100, // Razorpay expects the amount in paise
+    //   currency: 'INR', // Change the currency code as needed
+    // });
+  
+    // Validation for booking details
+    if (!bookingDetails || !bookingDetails.selectedDate || !bookingDetails.selectedTime) {
+      return next(new ErrorHandler('Please provide booking details with selected date and time', 400));
+    }
+  
+    // Ensure selectedTruck is an object
+    const selectedTruck = truckDetails.selectedTruck || { type: null, count: null };
+  
+    // Convert selectedTruck to a string if it's an object
+    const selectedTruckString = typeof selectedTruck === 'object' ? JSON.stringify(selectedTruck) : selectedTruck;
+  
+    // Assuming you have a User model and req.user.uid is the user's ID
+    const userId = req.user ? req.user.uid : null;
+  
+    await Order.create({
+        form,
+        selectedItems,
+        truckDetails: {
+          counts: truckDetails.counts,
+          selectedTruck: selectedTruckString,
+        },
+        pricingModal,
+        bookingDetails,
+        totalAmount,
+        user: userId,
+        acceptedBy,
+        payment,
+        orderCompletion,
+        tracking,
+        razorpayOrderId,
+      
+    });
+  
+    res.status(201).json({
+      success: true,
+    });
+  });
+  
   
 
-   // Assuming totalPrice is calculated based on your logic
-   const totalPrice = req.body.amount; // Change this line based on your logic
-
-//    // Create a new Razorpay order
-//    const razorpayOrder = await razorpay.orders.create({
-//      amount: totalPrice * 100, // Razorpay expects the amount in paise
-//      currency: 'INR', // Change the currency code as needed
-//    });
-
-//   if (dates.length < 1) {
-//     return next(new ErrorHandler('Please insert booking dates', 400));
-//   }
-
-if (!dates || dates.length === 0) {
-    return next(new ErrorHandler('Please insert booking dates', 400));
-  }
-
-
-
-
-  await Order.create({
-    dates, 
-    amount,
-    orderTime, 
-    movingTo,
-    movingFrom, 
-    distance, 
-    user: req.user.uid, 
-    payment, 
-    orderCompletion, 
-    tracking, 
-    furniture, 
-    appliances, 
-    cartoons,
-    singleLayerPacking,
-    multiLayerPacking,
-    carpenterCharges,
-    tvMounting,
-    acInstallation,
-    acUninstallation,
-    // razorpayOrderId: razorpayOrder.id,
-  })
-
-  res.status(201).json({
-    success: true
-  });
-});
 
 
 
