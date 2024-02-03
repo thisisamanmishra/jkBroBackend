@@ -117,11 +117,31 @@ exports.getUser = catchAsyncErrors(async (req, res, next) => {
     })
 })
 
+// // update user 
+// exports.updateUser = catchAsyncErrors(async (req, res, next) => {
+//     const { name, email, birthdate, purpose, mobile } = req.body;
+
+//     const user = await User.findByIdAndUpdate(req.user.id, {
+//         $set: {
+//             name,
+//             email,
+//             birthdate,
+//             purpose,
+//             mobile
+//         }
+//     }, { new: true , runValidators: true});
+
+//     res.status(200).json({
+//         success: true,
+//         user
+//     });
+// });
 // update user 
 exports.updateUser = catchAsyncErrors(async (req, res, next) => {
     const { name, email, birthdate, purpose, mobile } = req.body;
+    const userId = req.params.id; // Assuming the user ID is passed in the URL parameters
 
-    const user = await User.findByIdAndUpdate(req.user.id, {
+    const user = await User.findByIdAndUpdate(userId, {
         $set: {
             name,
             email,
