@@ -13,6 +13,8 @@ const ErrorHandler = require('../utils/errorHandler');
 // new booking
 // new booking
 exports.createOrder = catchAsyncErrors(async (req, res, next) => {
+
+    const userId = req.params.uid;
     const {
       form,
       selectedItems,
@@ -20,7 +22,6 @@ exports.createOrder = catchAsyncErrors(async (req, res, next) => {
       pricingModal,
       bookingDetails,
       totalAmount,
-      user,
       acceptedBy,
       payment,
       orderCompletion,
@@ -48,8 +49,7 @@ exports.createOrder = catchAsyncErrors(async (req, res, next) => {
     // Convert selectedTruck to a string if it's an object
     const selectedTruckString = typeof selectedTruck === 'object' ? JSON.stringify(selectedTruck) : selectedTruck;
   
-    // Assuming you have a User model and req.user.uid is the user's ID
-    const userId = req.user ? req.user.uid : null;
+
   
     await Order.create({
         form,
