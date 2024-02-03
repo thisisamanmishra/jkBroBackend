@@ -119,22 +119,23 @@ exports.getUser = catchAsyncErrors(async (req, res, next) => {
 
 // update user 
 exports.updateUser = catchAsyncErrors(async (req, res, next) => {
-    const { name, email, dob, mobile } = req.body;
+    const { name, email, birthdate, purpose, mobile } = req.body;
 
     const user = await User.findByIdAndUpdate(req.user.id, {
         $set: {
             name,
             email,
-            dob,
+            birthdate,
+            purpose,
             mobile
         }
-    }, { new: true , runValidators: true})
+    }, { new: true , runValidators: true});
 
     res.status(200).json({
         success: true,
         user
-    })
-})
+    });
+});
 
 // delete user 
 exports.deleteUser = catchAsyncErrors(async (req, res, next) => {

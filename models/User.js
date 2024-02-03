@@ -15,10 +15,20 @@ const userSchema = new mongoose.Schema({
         validate: [validator.isEmail, "Please enter valid email"],
         unique: true
     },
-    dob: {
-        type: String,
-    
-    },
+    birthdate: {
+        day: {
+          type: String,
+          required: true,
+        },
+        month: {
+          type: String,
+          required: true,
+        },
+        year: {
+          type: String,
+          required: true,
+        },
+      },
     uid: {
         type: String,
     
@@ -35,6 +45,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Order"
     }],
+    purpose: {
+        type: String,
+        required: true
+    },
     role: {
         type: String,
         default: 'user',
