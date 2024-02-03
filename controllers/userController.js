@@ -139,9 +139,9 @@ exports.getUser = catchAsyncErrors(async (req, res, next) => {
 // update user 
 exports.updateUser = catchAsyncErrors(async (req, res, next) => {
     const { name, email, birthdate, purpose, mobile } = req.body;
-    const userId = req.params.id; // Assuming the user ID is passed in the URL parameters
+    const userUid = req.params.uid; // Assuming the user UID is passed in the URL parameters
 
-    const user = await User.findByIdAndUpdate(userId, {
+    const user = await User.findOneAndUpdate({ uid: userUid }, {
         $set: {
             name,
             email,
@@ -151,11 +151,19 @@ exports.updateUser = catchAsyncErrors(async (req, res, next) => {
         }
     }, { new: true , runValidators: true});
 
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: 'User not found'
+        });
+    }
+
     res.status(200).json({
         success: true,
         user
     });
 });
+
 
 // delete user 
 exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
