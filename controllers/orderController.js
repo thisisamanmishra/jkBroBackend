@@ -13,7 +13,7 @@ const ErrorHandler = require('../utils/errorHandler');
 // new booking
 
 exports.createOrder = catchAsyncErrors(async (req, res, next) => {
-  const { orderDate, orderTime, address, distance, amount, user, payment, orderCompletion, tracking, furniture, appliances, cartoons, tvMounting, acInstallation, acUninstallation, carpenterCharges, singleLayerPacking, multiLayerPacking } = req.body;
+  const { dates, orderTime, address, distance, amount, user, payment, orderCompletion, tracking, furniture, appliances, cartoons, tvMounting, acInstallation, acUninstallation, carpenterCharges, singleLayerPacking, multiLayerPacking } = req.body;
 
   
 
@@ -26,15 +26,15 @@ exports.createOrder = catchAsyncErrors(async (req, res, next) => {
 //      currency: 'INR', // Change the currency code as needed
 //    });
 
-  if (dates.length < 1) {
-    return next(new ErrorHandler('Please insert booking dates', 400));
-  }
+//   if (dates.length < 1) {
+//     return next(new ErrorHandler('Please insert booking dates', 400));
+//   }
 
 
 
 
   await Order.create({
-    orderDate, 
+    dates, 
     orderTime, 
     address, 
     distance, 

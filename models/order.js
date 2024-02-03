@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  orderDate: {
-    type: Date,
+  dates: {
+    type: String,
     required: true,
   },
   orderTime: {
