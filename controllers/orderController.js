@@ -152,7 +152,7 @@ exports.getOwnSingleOrderDetails = catchAsyncErrors(async (req, res, next) => {
 
 // get own all bookings
 exports.getOwnOrders = catchAsyncErrors(async (req, res, next) => {
-    const userId = req.user.uid; // Assuming you are using authentication middleware to get the user ID
+    const userId = req.user.id; // Assuming you are using authentication middleware to get the user ID
 
     const orders = await Order.find({ 'user': userId });
 
@@ -164,7 +164,7 @@ exports.getOwnOrders = catchAsyncErrors(async (req, res, next) => {
 
 // get all notAccepted bookings
 exports.getNotAcceptedOrders = catchAsyncErrors(async (req, res, next) => {
-    const uid = req.user.uid; // Assuming you are using Firebase Authentication to get the UID
+    const uid = req.user.id; // Assuming you are using Firebase Authentication to get the UID
 
     const notAcceptedOrders = await Order.find({
         'user': uid,
