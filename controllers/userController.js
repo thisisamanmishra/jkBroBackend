@@ -32,14 +32,20 @@ exports.googleLogin = catchAsyncErrors(async (req, res, next) => {
                 role: "user",
             });
 
-            const user = await newUser.save();
-            sendToken(user, 201, res);
-            return res.status(200).send({ user: user });
+            const savedUser = await newUser.save();
             
+            // Log the token before sending
+            console.log("Generated Token:", savedUser.generateAuthToken());
+            
+            // sendToken may already send the response, so return here
+            return sendToken(savedUser, 201, res);
         } else {
             // User already exists, handle accordingly
-            sendToken(user, 200, res);
-            return res.status(200).send({ user: user });
+            // Log the token before sending
+            console.log("Generated Token:", user.generateAuthToken());
+            
+            // sendToken may already send the response, so return here
+            return sendToken(user, 200, res);
         }
     } catch (error) {
         return res.status(500).send({ success: false, message: error });
