@@ -2,46 +2,67 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
+
 const app = express();
 
-// Config
-if (process.env.NODE_ENV !== "production") {
-    require('dotenv').config({ path: "config/config.env" });
+
+// config
+if (process.env.NODE_ENV !== "PRODUCTION") {
+    require('dotenv').config({ path: "config/config.env" })
 }
 
 // Routes import
 const userRoute = require('./routes/userRoute');
 const orderRoute = require('./routes/orderRoute');
+
 const errorMiddleware = require('./middlewares/errorMiddleware');
 
-// Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
 app.use(cookieParser());
 
-app.use(require('cors')({
-    origin: '*',
-    credentials: true,
-}));
+// const allowedOrigins = [
+//     'http://localhost:3000', // Replace this with your first frontend URL
+//     'https://localhost:3001',   // Replace this with your second frontend URL
+//   ];
 
-// API Routes
+
+// // cors cofiguration
+// if (process.env.NODE_ENV !== "PRODUCTION") {
+//     app.use(require('cors')({
+//         origin: true,
+//         allowedHeaders: ['Content-Type', 'Authorization'],
+//         credentials:true,
+//         methods: '*' ,
+//         optionsSuccessStatus: 200,
+//     }))
+// }
+const cors = require('cors');
+const corsOptions ={
+    origin:true, 
+    credentials:true, 
+    methods: '*',           //access-control-allow-credentials:true
+    optionSuccessStatus:200
+    
+}
+app.use(cors(corsOptions));
+
 app.use('/api/v1', userRoute);
 app.use('/api/v1', orderRoute);
 
-// Serve static files
-app.use(express.static(path.join(__dirname, "../frontend/build")));
+// app.use(express.static(path.join(__dirname + "./../frontend/build")));
 
-// Custom GET endpoint
-app.get('/api/v1/test', (req, res) => {
-    res.json({ message: 'This is a test endpoint!' });
-});
+// app.get('*', (req, res) => {
+//     res.sendFile(path.resolve(__dirname, "./../frontend/build/index.html"));
+// })
 
-// Catch-all route for non-API routes
-app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../frontend/build/index.html"));
-});
+// error middileware
+app.use(errorMiddleware)
 
-// Error middleware
-app.use(errorMiddleware);
+
+
+
+
 
 module.exports = app;

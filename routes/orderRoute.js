@@ -4,7 +4,7 @@ const { isAuthenticatedUser, authorizedRole } = require('../middlewares/auth');
 
 const router = express.Router();
 
-router.route('/order/create').post(isAuthenticatedUser, createOrder);
+router.route('/order/create').post(createOrder);
 router.route('/order/:id/accept').post(isAuthenticatedUser, acceptOrder); //packer
 router.route('/order/:id/update-tracking').post(isAuthenticatedUser, updateTrackingStatus); //packer
 router.route('/order/:id/details').get(isAuthenticatedUser, getOwnSingleOrderDetails);

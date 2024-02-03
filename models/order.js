@@ -7,16 +7,16 @@ const orderSchema = new mongoose.Schema({
   },
   orderTime: {
     type: String,
-    required: true,
+    required: false,
   },
   address: {
     type: String,
-    required: true,
+    required: false,
   },
   distance: {
     type: String,
     enum: ['Within the City', 'Outside City'],
-    required: true,
+    required: false,
   },
   amount: {
     type: Number,
@@ -25,7 +25,7 @@ const orderSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
+    required: false,
   },
   acceptedBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -33,7 +33,7 @@ const orderSchema = new mongoose.Schema({
   },
   payment: {
     type: String,
-    required: true,
+    required: false,
   },
   orderCompletion: {
     type: String,
@@ -45,7 +45,8 @@ const orderSchema = new mongoose.Schema({
       status: {
         type: String,
         enum: ['Processing', 'Picked', 'Completed'],
-        required: true,
+        default: 'Processing',
+        required: false,
       },
       timestamp: {
         type: Date,
