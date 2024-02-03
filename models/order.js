@@ -9,7 +9,11 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  address: {
+  movingTo: {
+    type: String,
+    required: false,
+  },
+  movingFrom: {
     type: String,
     required: false,
   },
