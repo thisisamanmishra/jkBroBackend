@@ -151,16 +151,25 @@ exports.getOwnSingleOrderDetails = catchAsyncErrors(async (req, res, next) => {
 });
 
 // get own all bookings
+
 exports.getOwnOrders = catchAsyncErrors(async (req, res, next) => {
-    const userId = req.params.id; // Assuming you are using authentication middleware to get the user ID
+    const userId = req.params.id;
+    console.log(userId);
 
-    const orders = await Order.find({ 'user': userId });
 
-    res.status(200).json({
-        success: true,
-        orders
-    });
+    try {
+        const orders = await Order.find({ 'user': userId });
+
+        res.status(200).json({
+            success: true,
+            orders
+        });
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        next(error);
+    }
 });
+
 
 // get all notAccepted bookings
 exports.getNotAcceptedOrders = catchAsyncErrors(async (req, res, next) => {
@@ -254,13 +263,19 @@ exports.updateTrackingStatus = catchAsyncErrors(async (req, res, next) => {
 
 // Get all orders with their details
 exports.getAllOrders = catchAsyncErrors(async (req, res, next) => {
-    const allOrders = await Order.find().populate('user');
+    try {
+        const allOrders = await Order.find();
 
-    res.status(200).json({
-        success: true,
-        orders: allOrders
-    });
+        res.status(200).json({
+            success: true,
+            orders: allOrders
+        });
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        next(error);
+    }
 });
+
 
 // get all orders accepted by a particular packer -- admin and packer
 exports.getOrdersAcceptedByPacker = catchAsyncErrors(async (req, res, next) => {
