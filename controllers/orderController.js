@@ -154,7 +154,7 @@ exports.getOwnSingleOrderDetails = catchAsyncErrors(async (req, res, next) => {
 
 exports.getOwnOrders = catchAsyncErrors(async (req, res, next) => {
     const userId = req.params.id;
-    console.log(userId);
+    
 
 
     try {
