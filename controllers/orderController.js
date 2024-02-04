@@ -152,7 +152,7 @@ exports.getOwnSingleOrderDetails = catchAsyncErrors(async (req, res, next) => {
 
 // get own all bookings
 exports.getOwnOrders = catchAsyncErrors(async (req, res, next) => {
-    const userId = req.user.id; // Assuming you are using authentication middleware to get the user ID
+    const userId = req.params.id; // Assuming you are using authentication middleware to get the user ID
 
     const orders = await Order.find({ 'user': userId });
 
