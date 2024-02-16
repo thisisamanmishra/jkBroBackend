@@ -53,25 +53,25 @@ exports.googleLogin = catchAsyncErrors(async (req, res, next) => {
 });
 
 
-// sign up
-exports.createUser = catchAsyncErrors(async (req, res, next) => {
-    const { name, email, uid, mobile, role } = req.body;
+// // sign up
+// exports.createUser = catchAsyncErrors(async (req, res, next) => {
+//     const { name, email, uid, mobile, role } = req.body;
 
-    const user = await User.findOne({ uid });
-    if(user){
-        return res.status(422).json({ error: "User Already Exist "});
-    }
-    else{
-    const user = await User.create({
-        name,
-        email,
-        uid,
-        mobile,
-        role
-    });
-    sendToken(user, 201, res);
-}
-})
+//     const user = await User.findOne({ uid });
+//     if(user){
+//         return res.status(422).json({ error: "User Already Exist "});
+//     }
+//     else{
+//     const user = await User.create({
+//         name,
+//         email,
+//         uid,
+//         mobile,
+//         role
+//     });
+//     sendToken(user, 201, res);
+// }
+// })
 
 
 // // login user
@@ -117,25 +117,25 @@ exports.getUser = catchAsyncErrors(async (req, res, next) => {
     })
 })
 
-// // update user 
-// exports.updateUser = catchAsyncErrors(async (req, res, next) => {
-//     const { name, email, birthdate, purpose, mobile } = req.body;
+// update user 
+exports.updateUsers = catchAsyncErrors(async (req, res, next) => {
+    const { name, email, birthdate, purpose, mobile } = req.body;
 
-//     const user = await User.findByIdAndUpdate(req.user.id, {
-//         $set: {
-//             name,
-//             email,
-//             birthdate,
-//             purpose,
-//             mobile
-//         }
-//     }, { new: true , runValidators: true});
+    const user = await User.findByIdAndUpdate(req.user.id, {
+        $set: {
+            name,
+            email,
+            birthdate,
+            purpose,
+            mobile
+        }
+    }, { new: true , runValidators: true});
 
-//     res.status(200).json({
-//         success: true,
-//         user
-//     });
-// });
+    res.status(200).json({
+        success: true,
+        user
+    });
+});
 // update user 
 exports.updateUser = catchAsyncErrors(async (req, res, next) => {
     const { name, email, birthdate, purpose, mobile } = req.body;
